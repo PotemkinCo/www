@@ -1,6 +1,6 @@
-# Potemkin & Co
+# Alex @ Potemkin&Co
 
-Personal site for [Alex @ Potemkin & Co](https://potemkin.co) — notes, projects, and whatever is on the desk.
+Personal site for [Alex @ Potemkin&Co](https://potemkin.co) — notes, projects, and whatever is on the desk.
 
 Built with [Astro Sienna](https://github.com/anjay-goel/astro-sienna).
 

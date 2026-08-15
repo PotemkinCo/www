@@ -2,7 +2,7 @@ import type { SiteConfig } from "@/types";
 import type { AstroExpressiveCodeOptions } from "astro-expressive-code";
 
 export const siteConfig: SiteConfig = {
-	author: "Alex",
+	author: "Alex @ Potemkin&Co",
 	date: {
 		locale: "en-US",
 		options: {
@@ -12,14 +12,14 @@ export const siteConfig: SiteConfig = {
 		},
 	},
 	description:
-		"Writing and projects from Alex at Potemkin & Co — software, systems, and whatever is on the desk.",
+		"Writing and projects from Alex @ Potemkin&Co — software, systems, and whatever is on the desk.",
 	lang: "en-US",
 	ogLocale: "en_US",
 	sortPostsByUpdatedDate: false,
-	title: "Potemkin & Co",
+	title: "Alex @ Potemkin&Co",
 	hideThemeCredit: false,
 	profile: {
-		name: "Alex",
+		name: "Alex @ Potemkin&Co",
 		github: "https://github.com/alexander-potemkin",
 		linkedin: "https://www.linkedin.com/in/potemkin/",
 		avatar: "/avatar.png",
