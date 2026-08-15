@@ -100,6 +100,15 @@ const avatarUrl = profile?.avatar ? absoluteUrl(profile.avatar, Astro.site) : un
 	.bio :global(p:last-child) {
 		margin-bottom: 0;
 	}
+	.bio :global(h3) {
+		font-family: var(--font-sans);
+		font-size: 11.5px;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: hsl(var(--theme-text) / 0.72);
+		margin: 34px 0 16px;
+	}
 	.bio :global(a) {
 		color: hsl(var(--theme-text));
 		text-decoration: underline;
