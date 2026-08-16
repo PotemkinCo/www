@@ -36,27 +36,25 @@ export const menuLinks: { path: string; title: string }[] = [
 		title: "Posts",
 	},
 	{
+		path: "/tech-scribbles/",
+		title: "Tech scribbles",
+	},
+	{
 		path: "/about/",
 		title: "About",
 	},
 ];
 
 export const expressiveCodeOptions: AstroExpressiveCodeOptions = {
+	frames: false,
 	styleOverrides: {
 		borderRadius: "4px",
-		codeBackground: ({ theme }) => (theme.type === "light" ? "#f0e9d6" : "#1a1715"),
+		codeBackground: ({ theme }) => (theme.type === "light" ? "#f5f5f5" : "#111111"),
 		codeFontFamily:
 			'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;',
 		codeFontSize: "0.875rem",
 		codeLineHeight: "1.7142857rem",
 		codePaddingInline: "1rem",
-		frames: {
-			editorActiveTabBackground: ({ theme }) => (theme.type === "light" ? "#f0e9d6" : "#1a1715"),
-			editorTabBarBackground: ({ theme }) => (theme.type === "light" ? "#ebe3cd" : "#15120e"),
-			frameBoxShadowCssValue: "none",
-			terminalBackground: ({ theme }) => (theme.type === "light" ? "#f0e9d6" : "#1a1715"),
-			terminalTitlebarBackground: ({ theme }) => (theme.type === "light" ? "#ebe3cd" : "#15120e"),
-		},
 		uiLineHeight: "inherit",
 	},
 	themeCssSelector(theme, { styleVariants }) {

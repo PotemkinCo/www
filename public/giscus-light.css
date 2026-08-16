@@ -1,7 +1,7 @@
 main {
 	/* RGB triplets — composed with rgba() inside giscus's stylesheet. */
-	--primary-default: 138, 68, 35;
-	--bg-default: 246, 241, 230;
+	--primary-default: 56, 56, 56;
+	--bg-default: 247, 247, 247;
 
 	--color-prettylights-syntax-comment: #6e7781;
 	--color-prettylights-syntax-constant: #0550ae;
@@ -36,72 +36,72 @@ main {
 
 	/* Lift the canvas slightly above the page background so the comments
 	   region reads as its own surface. */
-	--color-canvas-default: #fbf6ec;
-	--color-canvas-overlay: #fbf6ec;
-	--color-canvas-inset: #efe9da;
-	--color-canvas-subtle: #f3edde;
+	--color-canvas-default: #fcfcfc;
+	--color-canvas-overlay: #fcfcfc;
+	--color-canvas-inset: #f0f0f0;
+	--color-canvas-subtle: #f3f3f3;
 
 	/* Text */
-	--color-fg-default: #25201b;
-	--color-fg-muted: #4a4239;
-	--color-fg-subtle: #7a6f5e;
-	--color-fg-on-emphasis: #fbf6ec;
+	--color-fg-default: #1f1f1f;
+	--color-fg-muted: #616161;
+	--color-fg-subtle: #8a8a8a;
+	--color-fg-on-emphasis: #fcfcfc;
 
 	/* Hairlines / borders */
-	--color-border-default: #d9cfb9;
-	--color-border-muted: #e6dfca;
-	--color-neutral-muted: rgba(138, 68, 35, 0.1);
-	--color-neutral-subtle: rgba(138, 68, 35, 0.06);
+	--color-border-default: #e0e0e0;
+	--color-border-muted: #ebebeb;
+	--color-neutral-muted: rgba(0, 0, 0, 0.08);
+	--color-neutral-subtle: rgba(0, 0, 0, 0.04);
 
-	/* Accent — warm orange-brown */
-	--color-accent-fg: #8a4423;
-	--color-accent-emphasis: #8a4423;
-	--color-accent-muted: rgba(138, 68, 35, 0.4);
-	--color-accent-subtle: rgba(138, 68, 35, 0.1);
+	/* Accent — soft charcoal */
+	--color-accent-fg: #383838;
+	--color-accent-emphasis: #383838;
+	--color-accent-muted: rgba(0, 0, 0, 0.35);
+	--color-accent-subtle: rgba(0, 0, 0, 0.06);
 
-	/* Buttons — sit on canvas, slight cream tint */
-	--color-btn-text: #25201b;
-	--color-btn-bg: #fbf6ec;
-	--color-btn-border: #d9cfb9;
+	/* Buttons — sit on canvas, slight gray tint */
+	--color-btn-text: #1f1f1f;
+	--color-btn-bg: #fcfcfc;
+	--color-btn-border: #e0e0e0;
 	--color-btn-shadow: 0 0 transparent;
 	--color-btn-inset-shadow: 0 0 transparent;
-	--color-btn-hover-bg: #efe9da;
-	--color-btn-hover-border: #c5b89a;
-	--color-btn-active-bg: #e6dfca;
-	--color-btn-active-border: #c5b89a;
-	--color-btn-selected-bg: #efe9da;
+	--color-btn-hover-bg: #f0f0f0;
+	--color-btn-hover-border: #c8c8c8;
+	--color-btn-active-bg: #ebebeb;
+	--color-btn-active-border: #c8c8c8;
+	--color-btn-selected-bg: #f0f0f0;
 
 	/* Primary button — accent */
-	--color-btn-primary-text: #fbf6ec;
-	--color-btn-primary-bg: #8a4423;
-	--color-btn-primary-border: rgba(138, 68, 35, 0.4);
+	--color-btn-primary-text: #fcfcfc;
+	--color-btn-primary-bg: #383838;
+	--color-btn-primary-border: rgba(0, 0, 0, 0.2);
 	--color-btn-primary-shadow: 0 0 transparent;
 	--color-btn-primary-inset-shadow: 0 0 transparent;
-	--color-btn-primary-hover-bg: #6f351a;
-	--color-btn-primary-hover-border: #6f351a;
-	--color-btn-primary-selected-bg: #6f351a;
+	--color-btn-primary-hover-bg: #2a2a2a;
+	--color-btn-primary-hover-border: #2a2a2a;
+	--color-btn-primary-selected-bg: #2a2a2a;
 	--color-btn-primary-selected-shadow: 0 0 transparent;
-	--color-btn-primary-disabled-text: rgba(251, 246, 236, 0.5);
-	--color-btn-primary-disabled-bg: rgba(138, 68, 35, 0.5);
-	--color-btn-primary-disabled-border: rgba(138, 68, 35, 0.2);
+	--color-btn-primary-disabled-text: rgba(252, 252, 252, 0.5);
+	--color-btn-primary-disabled-bg: rgba(56, 56, 56, 0.5);
+	--color-btn-primary-disabled-border: rgba(0, 0, 0, 0.15);
 
-	--color-action-list-item-default-hover-bg: rgba(138, 68, 35, 0.06);
+	--color-action-list-item-default-hover-bg: rgba(0, 0, 0, 0.04);
 
-	--color-segmented-control-bg: #efe9da;
-	--color-segmented-control-button-bg: #fbf6ec;
-	--color-segmented-control-button-selected-border: #d9cfb9;
+	--color-segmented-control-bg: #f0f0f0;
+	--color-segmented-control-button-bg: #fcfcfc;
+	--color-segmented-control-button-selected-border: #e0e0e0;
 
-	--color-fg-on-emphasis: #fbf6ec;
-	--color-social-reaction-bg-hover: rgba(138, 68, 35, 0.1);
-	--color-social-reaction-bg-reacted-hover: rgba(138, 68, 35, 0.2);
+	--color-fg-on-emphasis: #fcfcfc;
+	--color-social-reaction-bg-hover: rgba(0, 0, 0, 0.06);
+	--color-social-reaction-bg-reacted-hover: rgba(0, 0, 0, 0.1);
 
-	--color-primer-fg-disabled: #a89e8b;
-	--color-primer-canvas-backdrop: rgba(37, 32, 27, 0.4);
-	--color-primer-border-contrast: rgba(37, 32, 27, 0.1);
+	--color-primer-fg-disabled: #b0b0b0;
+	--color-primer-canvas-backdrop: rgba(31, 31, 31, 0.4);
+	--color-primer-border-contrast: rgba(31, 31, 31, 0.1);
 	--color-primer-shadow-highlight: 0 0 transparent;
 	--color-primer-shadow-inset: 0 0 transparent;
 
-	--color-scale-gray-1: #e6dfca;
+	--color-scale-gray-1: #ebebeb;
 }
 
 main .gsc-comment > .gsc-comment-box,

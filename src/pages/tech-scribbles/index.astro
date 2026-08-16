@@ -1,0 +1,365 @@
+---
+import { getAllTechScribbles, groupTechScribblesByLetter } from "@/data/techscribble";
+import PageLayout from "@/layouts/Base.astro";
+import { withBase } from "@/utils/path";
+
+const allScribbles = await getAllTechScribbles();
+const letterGroups = groupTechScribblesByLetter(allScribbles);
+const totalCount = allScribbles.length;
+
+const availableLetters = letterGroups.map((g) => g.letter);
+const allAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("");
+
+const meta = {
+	description: "Personal collection of tech scribbles, setup guides, and system configuration.",
+	title: "Tech scribbles",
+};
+---
+
+<PageLayout meta={meta}>
+	<section class="techscribbles-section" aria-labelledby="techscribbles-label">
+		<div class="header-row">
+			<div class="section-label" id="techscribbles-label">Tech scribbles · {totalCount}</div>
+		</div>
+
+		<div class="controls-bar">
+			<div class="search-wrap">
+				<svg
+					aria-hidden="true"
+					class="search-icon"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+					></path>
+				</svg>
+				<input
+					type="search"
+					id="techscribble-filter"
+					placeholder="Search tech scribbles..."
+					aria-label="Filter tech scribbles by title"
+					autocomplete="off"
+					spellcheck="false"
+				/>
+				<button type="button" id="clear-filter" class="clear-btn" aria-label="Clear filter" style="display: none;">
+					✕
+				</button>
+			</div>
+
+			<nav class="alphabet-nav" aria-label="Alphabetical jump navigation">
+				{
+					allAlphabet.map((letter) => {
+						const hasItems = availableLetters.includes(letter);
+						return hasItems ? (
+							<a href={`#letter-${letter}`} class="letter-link active" data-letter={letter}>
+								{letter}
+							</a>
+						) : (
+							<span class="letter-link disabled">{letter}</span>
+						);
+					})
+				}
+			</nav>
+		</div>
+
+		<div id="no-results" class="no-results" style="display: none;">
+			No tech scribbles matching your search.
+		</div>
+
+		<div class="alphabet-groups" id="techscribbles-container">
+			{
+				letterGroups.map((group) => (
+					<div class="letter-group" id={`letter-${group.letter}`} data-group-letter={group.letter}>
+						<div class="group-header">
+							<span class="letter-badge">{group.letter}</span>
+							<span class="group-count">{group.scribbles.length}</span>
+						</div>
+						<ul class="techscribble-list">
+							{group.scribbles.map((scribble) => (
+								<li class="techscribble-item" data-title={scribble.data.title.toLowerCase()}>
+									<a
+										class="techscribble-link"
+										data-astro-prefetch
+										href={withBase(`/tech-scribbles/${scribble.id}/`)}
+									>
+										<span class="techscribble-name">{scribble.data.title}</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</section>
+</PageLayout>
+
+<script>
+	const input = document.getElementById("techscribble-filter") as HTMLInputElement | null;
+	const clearBtn = document.getElementById("clear-filter") as HTMLButtonElement | null;
+	const container = document.getElementById("techscribbles-container");
+	const noResults = document.getElementById("no-results");
+	const letterLinks = document.querySelectorAll<HTMLAnchorElement>(".alphabet-nav .letter-link.active");
+
+	if (input && container) {
+		const groups = container.querySelectorAll<HTMLElement>(".letter-group");
+
+		const filter = () => {
+			const query = input.value.trim().toLowerCase();
+			let visibleTotal = 0;
+
+			if (clearBtn) {
+				clearBtn.style.display = query ? "block" : "none";
+			}
+
+			groups.forEach((group) => {
+				const groupItems = group.querySelectorAll<HTMLElement>(".techscribble-item");
+				let groupVisibleCount = 0;
+
+				groupItems.forEach((item) => {
+					const title = item.dataset.title || "";
+					const matches = query === "" || title.includes(query);
+					item.style.display = matches ? "" : "none";
+					if (matches) {
+						groupVisibleCount++;
+						visibleTotal++;
+					}
+				});
+
+				group.style.display = groupVisibleCount > 0 ? "" : "none";
+			});
+
+			if (noResults) {
+				noResults.style.display = visibleTotal === 0 ? "block" : "none";
+			}
+
+			// Update active states on alphabet nav
+			letterLinks.forEach((link) => {
+				const letter = link.dataset.letter;
+				const targetGroup = document.getElementById(`letter-${letter}`);
+				const isVisible = targetGroup && targetGroup.style.display !== "none";
+				link.classList.toggle("dimmed", !isVisible);
+			});
+		};
+
+		input.addEventListener("input", filter);
+
+		if (clearBtn) {
+			clearBtn.addEventListener("click", () => {
+				input.value = "";
+				filter();
+				input.focus();
+			});
+		}
+	}
+</script>
+
+<style>
+	.techscribbles-section {
+		margin-bottom: 96px;
+	}
+
+	.header-row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: 24px;
+	}
+
+	.controls-bar {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin-bottom: 36px;
+		padding-bottom: 24px;
+		border-bottom: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+	}
+
+	.search-wrap {
+		position: relative;
+		display: flex;
+		align-items: center;
+		width: 100%;
+		max-width: 480px;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 12px;
+		width: 16px;
+		height: 16px;
+		color: hsl(var(--theme-text) / 0.45);
+		pointer-events: none;
+	}
+
+	.search-wrap input {
+		width: 100%;
+		padding: 9px 36px 9px 36px;
+		font-family: var(--font-mono);
+		font-size: 13.5px;
+		color: hsl(var(--theme-text));
+		background: hsl(var(--theme-bg));
+		border: 1px solid var(--hairline, rgba(0, 0, 0, 0.15));
+		border-radius: 4px;
+		outline: none;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.search-wrap input:focus {
+		border-color: hsl(var(--theme-accent));
+		box-shadow: 0 0 0 2px hsl(var(--theme-accent) / 0.15);
+	}
+
+	.search-wrap input::placeholder {
+		color: hsl(var(--theme-text) / 0.4);
+	}
+
+	.clear-btn {
+		position: absolute;
+		right: 10px;
+		background: none;
+		border: none;
+		padding: 4px;
+		font-size: 12px;
+		cursor: pointer;
+		color: hsl(var(--theme-text) / 0.5);
+		border-radius: 50%;
+		line-height: 1;
+	}
+
+	.clear-btn:hover {
+		color: hsl(var(--theme-text));
+	}
+
+	.alphabet-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		font-family: var(--font-mono);
+		font-size: 11.5px;
+		letter-spacing: 0.04em;
+	}
+
+	.letter-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 20px;
+		height: 22px;
+		padding: 0 3px;
+		border-radius: 3px;
+		text-align: center;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+
+	.letter-link.active {
+		color: hsl(var(--theme-text) / 0.85);
+		background: hsl(var(--theme-text) / 0.05);
+	}
+
+	.letter-link.active:hover {
+		background: hsl(var(--theme-accent));
+		color: #ffffff;
+	}
+
+	.letter-link.active.dimmed {
+		opacity: 0.25;
+		pointer-events: none;
+	}
+
+	.letter-link.disabled {
+		color: hsl(var(--theme-text) / 0.2);
+		cursor: default;
+	}
+
+	.alphabet-groups {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.letter-group {
+		scroll-margin-top: 40px;
+	}
+
+	.group-header {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		padding-bottom: 8px;
+		margin-bottom: 12px;
+		border-bottom: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+	}
+
+	.letter-badge {
+		font-family: var(--font-mono);
+		font-size: 18px;
+		font-weight: 600;
+		color: hsl(var(--theme-accent));
+	}
+
+	.group-count {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: hsl(var(--theme-text) / 0.4);
+	}
+
+	.techscribble-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.techscribble-item {
+		margin: 0;
+		padding: 0;
+	}
+
+	.techscribble-link {
+		display: flex;
+		align-items: baseline;
+		padding: 6px 8px;
+		margin: 0 -8px;
+		border-radius: 4px;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+
+	.techscribble-link:hover {
+		background-color: hsl(var(--theme-text) / 0.04);
+	}
+
+	.techscribble-name {
+		font-family: var(--font-serif);
+		font-size: 17.5px;
+		color: hsl(var(--theme-text));
+		transition: color 0.15s ease;
+	}
+
+	.techscribble-link:hover .techscribble-name {
+		color: hsl(var(--theme-accent));
+	}
+
+	.no-results {
+		font-family: var(--font-mono);
+		font-size: 14px;
+		color: hsl(var(--theme-text) / 0.5);
+		padding: 32px 0;
+		text-align: center;
+	}
+
+	@media (max-width: 480px) {
+		.techscribbles-section {
+			margin-bottom: 64px;
+		}
+	}
+</style>
