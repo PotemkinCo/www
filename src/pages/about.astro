@@ -79,16 +79,27 @@ const avatarUrl = profile?.avatar ? absoluteUrl(profile.avatar, Astro.site) : un
 		max-width: var(--reading-width);
 	}
 	.bio :global(ul) {
-		list-style: disc;
-		list-style-position: inside;
+		list-style: none;
 		margin: 0 0 28px;
 		padding: 0;
 	}
 	.bio :global(ul li) {
-		margin-bottom: 6px;
+		position: relative;
+		padding-left: 20px;
+		margin-bottom: 8px;
 		text-wrap: pretty;
 		word-wrap: break-word;
 		overflow-wrap: anywhere;
+	}
+	.bio :global(ul li::before) {
+		content: "";
+		position: absolute;
+		left: 4px;
+		top: 0.75em;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: hsl(var(--theme-accent));
 	}
 	.bio :global(ul li:last-child) {
 		margin-bottom: 0;
