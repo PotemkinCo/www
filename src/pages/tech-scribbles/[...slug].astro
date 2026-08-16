@@ -1,0 +1,418 @@
+---
+import { getAllTechScribbles, sortTechScribblesByTitle } from "@/data/techscribble";
+import PageLayout from "@/layouts/Base.astro";
+import { withBase } from "@/utils/path";
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import { render } from "astro:content";
+
+export const getStaticPaths = (async () => {
+	const all = sortTechScribblesByTitle(await getAllTechScribbles());
+	return all.map((entry, idx) => {
+		const prev = idx > 0 ? all[idx - 1] : undefined;
+		const next = idx < all.length - 1 ? all[idx + 1] : undefined;
+		return {
+			params: { slug: entry.id },
+			props: { entry, prev, next },
+		};
+	});
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { entry, prev, next } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const meta = {
+	description: entry.data.description ?? `Tech scribbles and setup guide for ${entry.data.title}.`,
+	title: entry.data.title,
+};
+---
+
+<PageLayout meta={meta}>
+	<div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+	<article class="techscribble-shell">
+		<nav class="crumbs" aria-label="Breadcrumb">
+			<a data-astro-prefetch href={withBase("/tech-scribbles/")}>Tech scribbles</a>
+			<span class="sep" aria-hidden="true">/</span>
+			<span class="current" aria-current="page">{entry.data.title}</span>
+		</nav>
+
+		<header class="techscribble-header">
+			<h1 class="techscribble-title">{entry.data.title}</h1>
+		</header>
+
+		{
+			headings.length > 2 && (
+				<details class="toc-details">
+					<summary class="toc-summary">Table of Contents</summary>
+					<nav class="toc-nav">
+						<ul>
+							{headings.filter((h) => h.depth <= 3).map((h) => (
+								<li class={`toc-depth-${h.depth}`}>
+									<a href={`#${h.slug}`}>{h.text}</a>
+								</li>
+							))}
+						</ul>
+					</nav>
+				</details>
+			)
+		}
+
+		<div class="techscribble-content">
+			<Content />
+		</div>
+
+		{(prev || next) && (
+			<nav class="techscribble-pager" aria-label="Neighbor scribbles">
+				{prev ? (
+					<a class="pager-link prev" data-astro-prefetch href={withBase(`/tech-scribbles/${prev.id}/`)}>
+						<span class="pager-eyebrow">← Previous</span>
+						<span class="pager-title">{prev.data.title}</span>
+					</a>
+				) : <div />}
+				{next ? (
+					<a class="pager-link next" data-astro-prefetch href={withBase(`/tech-scribbles/${next.id}/`)}>
+						<span class="pager-eyebrow">Next →</span>
+						<span class="pager-title">{next.data.title}</span>
+					</a>
+				) : <div />}
+			</nav>
+		)}
+	</article>
+
+	<button
+		aria-label="Back to Top"
+		class="to-top-btn"
+		data-show="false"
+		id="to-top-btn"
+	>
+		<svg
+			aria-hidden="true"
+			fill="none"
+			focusable="false"
+			stroke="currentColor"
+			stroke-width="2"
+			viewBox="0 0 24 24"
+		>
+			<path d="M4.5 15.75l7.5-7.5 7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+		</svg>
+	</button>
+</PageLayout>
+
+<script>
+	// Reading progress & back to top
+	const progress = document.getElementById("reading-progress");
+	const topBtn = document.getElementById("to-top-btn");
+
+	const handleScroll = () => {
+		const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+		const scrolled = window.scrollY;
+		if (progress && docHeight > 0) {
+			const pct = Math.min(100, Math.max(0, (scrolled / docHeight) * 100));
+			progress.style.width = `${pct}%`;
+		}
+		if (topBtn) {
+			topBtn.setAttribute("data-show", scrolled > 300 ? "true" : "false");
+		}
+	};
+
+	window.addEventListener("scroll", handleScroll, { passive: true });
+
+	topBtn?.addEventListener("click", () => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	});
+</script>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 2px;
+		width: 0%;
+		background: hsl(var(--theme-accent));
+		z-index: 100;
+		transition: width 0.1s linear;
+	}
+
+	.techscribble-shell {
+		max-width: 740px;
+		margin: 0 auto;
+		padding-bottom: 96px;
+	}
+
+	.crumbs {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--font-mono);
+		font-size: 12.5px;
+		color: hsl(var(--theme-text) / 0.5);
+		margin-bottom: 24px;
+	}
+
+	.crumbs a {
+		color: hsl(var(--theme-text) / 0.65);
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.crumbs a:hover {
+		color: hsl(var(--theme-accent));
+	}
+
+	.crumbs .sep {
+		opacity: 0.35;
+	}
+
+	.crumbs .current {
+		color: hsl(var(--theme-text) / 0.9);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.techscribble-header {
+		margin-bottom: 28px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+	}
+
+	.techscribble-title {
+		font-family: var(--font-serif);
+		font-size: clamp(28px, 4vw, 36px);
+		line-height: 1.15;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		color: hsl(var(--theme-text));
+		margin: 0;
+	}
+
+	.toc-details {
+		margin-bottom: 32px;
+		padding: 14px 18px;
+		border: 1px solid var(--hairline, rgba(0, 0, 0, 0.1));
+		border-radius: 6px;
+		background: hsl(var(--theme-text) / 0.02);
+		font-family: var(--font-mono);
+		font-size: 13px;
+	}
+
+	.toc-summary {
+		cursor: pointer;
+		font-weight: 600;
+		color: hsl(var(--theme-text) / 0.8);
+		user-select: none;
+		outline: none;
+	}
+
+	.toc-summary:hover {
+		color: hsl(var(--theme-accent));
+	}
+
+	.toc-nav {
+		margin-top: 12px;
+	}
+
+	.toc-nav ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.toc-nav li.toc-depth-3 {
+		padding-left: 16px;
+	}
+
+	.toc-nav a {
+		color: hsl(var(--theme-text) / 0.7);
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.toc-nav a:hover {
+		color: hsl(var(--theme-accent));
+	}
+
+	.techscribble-content {
+		font-family: var(--font-sans, system-ui, sans-serif);
+		font-size: 15.5px;
+		line-height: 1.65;
+		color: hsl(var(--theme-text) / 0.9);
+		word-break: break-word;
+	}
+
+	.techscribble-content :global(h1),
+	.techscribble-content :global(h2),
+	.techscribble-content :global(h3),
+	.techscribble-content :global(h4) {
+		font-family: var(--font-serif);
+		color: hsl(var(--theme-text));
+		font-weight: 500;
+		line-height: 1.25;
+		margin-top: 2em;
+		margin-bottom: 0.6em;
+		scroll-margin-top: 24px;
+	}
+
+	.techscribble-content :global(h1) {
+		font-size: 24px;
+		border-bottom: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+		padding-bottom: 6px;
+	}
+
+	.techscribble-content :global(h2) {
+		font-size: 20px;
+	}
+
+	.techscribble-content :global(h3) {
+		font-size: 17px;
+	}
+
+	.techscribble-content :global(p) {
+		margin-top: 0;
+		margin-bottom: 1.1em;
+	}
+
+	.techscribble-content :global(ul),
+	.techscribble-content :global(ol) {
+		margin-top: 0;
+		margin-bottom: 1.1em;
+		padding-left: 1.4em;
+	}
+
+	.techscribble-content :global(li) {
+		margin-bottom: 0.35em;
+	}
+
+	.techscribble-content :global(a) {
+		color: hsl(var(--theme-accent));
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.techscribble-content :global(blockquote) {
+		margin: 1.2em 0;
+		padding: 10px 16px;
+		border-left: 3px solid hsl(var(--theme-accent) / 0.5);
+		background: hsl(var(--theme-text) / 0.03);
+		border-radius: 0 4px 4px 0;
+		font-style: italic;
+		color: hsl(var(--theme-text) / 0.8);
+	}
+
+	.techscribble-content :global(pre) {
+		margin: 0;
+	}
+
+	.techscribble-content :global(.expressive-code) {
+		margin: 1.4em 0;
+	}
+
+	.techscribble-content :global(code:not(pre code)) {
+		font-family: var(--font-mono);
+		font-size: 0.88em;
+		padding: 2px 5px;
+		background: hsl(var(--theme-text) / 0.06);
+		border-radius: 3px;
+		color: hsl(var(--theme-text));
+	}
+
+	.techscribble-pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+		margin-top: 64px;
+		padding-top: 24px;
+		border-top: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+	}
+
+	.pager-link {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 12px 16px;
+		border: 1px solid var(--hairline, rgba(0, 0, 0, 0.1));
+		border-radius: 6px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+
+	.pager-link.next {
+		text-align: right;
+		grid-column: 2;
+	}
+
+	.pager-link:hover {
+		border-color: hsl(var(--theme-accent));
+		background: hsl(var(--theme-accent) / 0.04);
+	}
+
+	.pager-eyebrow {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: hsl(var(--theme-text) / 0.45);
+	}
+
+	.pager-title {
+		font-family: var(--font-serif);
+		font-size: 15px;
+		color: hsl(var(--theme-text));
+	}
+
+	.to-top-btn {
+		position: fixed;
+		bottom: 32px;
+		right: 32px;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: 1px solid var(--hairline, rgba(0, 0, 0, 0.15));
+		background: hsl(var(--theme-bg));
+		color: hsl(var(--theme-text) / 0.7);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(10px);
+		transition: all 0.2s ease;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		z-index: 50;
+	}
+
+	.to-top-btn[data-show="true"] {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+	}
+
+	.to-top-btn:hover {
+		color: hsl(var(--theme-accent));
+		border-color: hsl(var(--theme-accent));
+		transform: translateY(-2px);
+	}
+
+	.to-top-btn svg {
+		width: 18px;
+		height: 18px;
+	}
+
+	@media (max-width: 640px) {
+		.techscribble-pager {
+			grid-template-columns: 1fr;
+		}
+
+		.pager-link.next {
+			grid-column: 1;
+			text-align: left;
+		}
+	}
+</style>

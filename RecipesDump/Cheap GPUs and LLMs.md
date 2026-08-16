@@ -1,0 +1,1 @@
+- hyperbolic.xyz: - H100: $0.99/hr, A100: $1.20/hr, RTX 4090: $0.50/hr, L4: $0.43/hr as of Jan 14, 2025

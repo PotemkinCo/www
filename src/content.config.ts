@@ -42,4 +42,32 @@ const page = defineCollection({
 	}),
 });
 
-export const collections = { post, page };
+const techscribble = defineCollection({
+	loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/tech-scribbles" }),
+	schema: ({ image }) =>
+		z.object({
+			coverImage: z
+				.object({
+					alt: z.string(),
+					src: image(),
+				})
+				.optional(),
+			description: z.string().optional(),
+			draft: z.boolean().default(false),
+			ogImage: z.string().optional(),
+			publishDate: z
+				.string()
+				.or(z.date())
+				.optional()
+				.transform((val) => (val ? new Date(val) : undefined)),
+			tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+			title: z.string().max(160),
+			updatedDate: z
+				.string()
+				.or(z.date())
+				.optional()
+				.transform((str) => (str ? new Date(str) : undefined)),
+		}),
+});
+
+export const collections = { post, page, techscribble };
